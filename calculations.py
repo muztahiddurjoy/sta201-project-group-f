@@ -48,19 +48,17 @@ def question_three():
 
 def question_four():
     #Answer to Question 4A
-    # Define dependent (Y) and independent (X) variables
-    X = df['WeeklyScreentimeHours']
+    X = statmodel.add_constant(df['WeeklyScreentimeHours'])
     Y = df['StressScore']
 
-    # Add a constant (intercept) to the predictor
-    X_const = statmodel.add_constant(X)
-
-    # Fit the model
-    model_screen = statmodel.OLS(Y, X_const).fit()
-
-    # Print the summary statistics
+    model_screen = statmodel.OLS(Y, X).fit()
     print("--- Regression: Stress vs. Screen Time ---")
     print(model_screen.summary())
+
+    x_sleep = statmodel.add_constant(df['SleepQualityScore'])
+    model_sleep = statmodel.OLS(Y, x_sleep).fit()
+    print("\n--- Regression: Stress vs. Sleep Quality ---")
+    print(model_sleep.summary())
 
 
 question_four()
