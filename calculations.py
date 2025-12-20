@@ -1,13 +1,43 @@
 import pandas as panda
 import matplotlib.pyplot as plot
 import seaborn as sns
+import numpy as np
 import statsmodels.api as statmodel
+import csv
 
 df = panda.read_csv('dataset_6.csv')
+
+
+
+def print_sd_table(series, col_name):
+        """
+        Creates and prints a table showing x, x-mean, and (x-mean)^2
+        to demonstrate how SD is calculated.
+        """
+
+        mean_val = series.mean()
+        
+        # Create a temporary DataFrame for the calculation
+        calc_df = panda.DataFrame()
+        calc_df['x'] = series
+        calc_df['x - mean'] = series - mean_val
+        calc_df['(x - mean)^2'] = (series - mean_val) ** 2
+        
+        # Calculate the Sum of Squares
+        sum_squares = calc_df['(x - mean)^2'].sum()
+        variance = sum_squares / (len(series) - 1)
+        sd = np.sqrt(variance)
+
+        print(f"\n--- Calculation Table for '{col_name}' ---")
+        with open(f"{col_name}_sd.csv", 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)            
+            writer.writerow([f'x ({col_name})', 'x - mean', '(x - mean)^2'])     
+            writer.writerows(calc_df.values)
+
 df["GenderLabel"] = df["Gender"].map({0:"Male", 1:"Female"})
 def question_two():
     #Answer to Question 2A
-
+    print("Printing the table")
     #Calculating the mean for the dataset
     mean_stress = df['StressScore'].mean()
     mean_screen_time = df['WeeklyScreentimeHours'].mean()
@@ -27,6 +57,10 @@ def question_two():
 
     print("\nQuestion 1B Results:\n")
     print(gender_comparison)
+
+    print_sd_table(df['StressScore'], "StressScore")
+    print_sd_table(df['WeeklyScreentimeHours'], "WeeklyScreentimeHours")
+    print_sd_table(df['SleepQualityScore'], "SleepQualityScore")
 
 def question_three():
     #Answer of Question 3A
@@ -61,4 +95,4 @@ def question_four():
     print(model_sleep.summary())
 
 
-question_four()
+question_two()
