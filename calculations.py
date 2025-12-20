@@ -80,19 +80,101 @@ def question_three():
     plot.savefig('./plots/scatterplot_stress_vs_screen_time.png', dpi=300, bbox_inches='tight')
     plot.show()
 
-def question_four():
-    #Answer to Question 4A
-    X = statmodel.add_constant(df['WeeklyScreentimeHours'])
+def question_four(df):
+    """
+    Performs Simple and Multiple Linear Regression analysis for Stress Score.
+    Generates summaries and regression plots.
+    """
+    
+    # --- PART A: Simple Linear Regression (Screen Time -> Stress) ---
+    X_screen = statmodel.add_constant(df['WeeklyScreentimeHours'])
     Y = df['StressScore']
-
-    model_screen = statmodel.OLS(Y, X).fit()
-    print("--- Regression: Stress vs. Screen Time ---")
+    
+    model_screen = statmodel.OLS(Y, X_screen).fit()
+    print("\n" + "="*40)
+    print("1. Simple Regression: Stress vs. Screen Time")
+    print("="*40)
     print(model_screen.summary())
 
-    x_sleep = statmodel.add_constant(df['SleepQualityScore'])
-    model_sleep = statmodel.OLS(Y, x_sleep).fit()
-    print("\n--- Regression: Stress vs. Sleep Quality ---")
+    # Visualization for Screen Time
+    plot.figure(figsize=(10, 4))
+    sns.regplot(x='WeeklyScreentimeHours', y='StressScore', data=df, line_kws={'color':'red'})
+    plot.title('Impact of Weekly Screen Time on Stress Score')
+    plot.show()
+
+    # --- PART B: Simple Linear Regression (Sleep Quality -> Stress) ---
+    X_sleep = statmodel.add_constant(df['SleepQualityScore'])
+    
+    model_sleep = statmodel.OLS(Y, X_sleep).fit()
+    print("\n" + "="*40)
+    print("2. Simple Regression: Stress vs. Sleep Quality")
+    print("="*40)
     print(model_sleep.summary())
 
+    # Visualization for Sleep Quality
+    plot.figure(figsize=(10, 4))
+    sns.regplot(x='SleepQualityScore', y='StressScore', data=df, line_kws={'color':'green'})
+    plot.title('Impact of Sleep Quality on Stress Score')
+    plot.show()
 
-question_two()
+    # --- PART C: Multiple Linear Regression (Both -> Stress) ---
+    # This is likely the core requirement for "Question 4" if Q1-3 were descriptive.
+    # It checks the combined effect of both variables.
+    X_mult = df[['WeeklyScreentimeHours', 'SleepQualityScore']]
+    X_mult = statmodel.add_constant(X_mult)
+    
+    model_mult = statmodel.OLS(Y, X_mult).fit()
+    print("\n" + "="*40)
+    print("3. Multiple Regression: Stress vs. (Screen Time + Sleep Quality)")
+    print("="*40)
+    print(model_mult.summary())
+
+# Usage Example:
+# question_four(df)
+
+
+def question_five_split_gender(df):
+    print("========================================")
+    print("5. Regression by Gender (Males vs Females)")
+    print("========================================")
+
+    # 1. Split the Data
+    # (Make sure your column name is 'Gender' and values are 'Male'/'Female')
+    male_df = df[df['Gender'] == 0]
+    female_df = df[df['Gender'] == 1]
+
+    # --- MODEL A: MALES ---
+    X_male = statmodel.add_constant(male_df['WeeklyScreentimeHours'])
+    Y_male = male_df['StressScore']
+    
+    model_male = statmodel.OLS(Y_male, X_male).fit()
+    print("\n--- MALE Regression Results ---")
+    print(model_male.summary())
+
+    # --- MODEL B: FEMALES ---
+    X_female = statmodel.add_constant(female_df['WeeklyScreentimeHours'])
+    Y_female = female_df['StressScore']
+    
+    model_female = statmodel.OLS(Y_female, X_female).fit()
+    print("\n--- FEMALE Regression Results ---")
+    print(model_female.summary())
+
+    # --- VISUALIZATION: Compare the Lines ---
+    plot.figure(figsize=(10, 6))
+    
+    # Plot Males (Blue)
+    sns.regplot(x='WeeklyScreentimeHours', y='StressScore', data=male_df, 
+                color='blue', label='Male', ci=None)
+    
+    # Plot Females (Red)
+    sns.regplot(x='WeeklyScreentimeHours', y='StressScore', data=female_df, 
+                color='red', label='Female', ci=None)
+
+    plot.title('Stress vs. Screen Time (By Gender)')
+    plot.legend()
+    plot.grid(True, alpha=0.3)
+    plot.show()
+
+# Usage
+question_five_split_gender(df)
+
