@@ -177,5 +177,4 @@ def question_five_split_gender(df):
     plot.show()
 
 # Usage
-question_five_split_gender(df)
-
+question_two()
