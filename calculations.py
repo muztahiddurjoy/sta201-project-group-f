@@ -57,6 +57,7 @@ def question_two():
 
     print("\nQuestion 1B Results:\n")
     print(gender_comparison)
+    #onek boro contribution
 
     print_sd_table(df['StressScore'], "StressScore")
     print_sd_table(df['WeeklyScreentimeHours'], "WeeklyScreentimeHours")
